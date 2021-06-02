@@ -8,82 +8,107 @@
 // *  Version 0.2                             * //
 // *                                          * //
 // *  To Do:                                  * //
-// *    - Remove errors                       * //
-// *    - Add holes for inserts               * //
+// *    - Remove errors:                      * //
+// *        margin betweew block and z-plane  * //
+// *    - Add holes for inserts M3            * //
 // *    -                                     * //
 // *    -                                     * //
 // *                                          * //
 // ******************************************** //
 
 
+
 // ******************************************** //
 // *                                          * //
-// *               Instructions               * //
+// *                Instructions              * //
 // *                                          * //
 // *  Definition of origin                    * //
 // *    Centre x, left allign y , and zero z  * //
 // *    Then extra translations as needed     * //
 // *                                          * //
 // *  All angles are counter clockwise        * //
-// *    as seen from outside                  * //
+// *    as seen from outside of axis          * //
 // *                                          * //
 // *  Create 3 elements:                      * //
-// *  A - VUKCasingCube at z-angle 10         * //
-// *  B - Ballpath & VUK at z-angle -20       * //
-// *  C - PVC tube at z-angle 20, x-angle-3   * //
+// *  A - VUK Case Cube at z-angle 10         * //
+// *  B - PVC Tube at z-angle 20, x-angle -3  * //
+// *  C - Ballpath & VUK at z-angle -20       * //
 // *                                          * //
 // *  Final product is difference A-B-C       * //
 // *                                          * //
-// *        playfield is at y-angle -8        * //
+// *        playfield is at y-angle -5        * //
 // *                                          * //
 // *                                          * //
 // ******************************************** //
+
 
 
 // ******************************************** //
 // *                Variables                 * //
-// *                                          * //
+// ******************************************** //
+//$fn=180;
+Overlap=0.01;
 
 
-// Variables PVC tube on exit 
-PVC_ID                  = 36;                   // PVC tube inner diameter
-PVC_WT                  = 3;                    // PVC tube wall thickness
-PVC_OD                  = PVC_ID + 2* PVC_WT;   // PVC tube outer diameter = 42
-LenghtHorizontalPVC     = 240;                  // PVC tube lenghts - NOT PRINTED
+// *                VUK Case Cube
+// *                
+// VUK Case Cube - Size
+Case_x=70;
+Case_y=70;
+Case_z=120;
 
-// Positioning Variables
-PVC_dx                  = 10;                   // How far should the tupe be away from x=0 
-PVC_dy                  = 31;                   // How far should the tupe be away from y=0 
-PVC_dz                  = 63;                   // How far should the tupe be away from z=0 
-PVC_Rotation            = [-3,0,20];            // Rotation of tube
-
-Case_Rotation           = [0,0,10];             // Rotation of VUK casing
-Case_RotationReverse    = [0,0,-10];            // Rotation of VUK casing
+// VUK Case Cube - Positioning
+Case_Translation        = [6,0,0];                  // Translation of VUK case
+Case_Rotation           = [0,0,10];                 // Rotation of VUK case
+Case_RotationReverse    = [0,0,-10];                // Rotation of VUK case
 
 
+// *                PVC tube
+// *
+// PVC Tube - Size
+PVC_ID                  = 36;                       // PVC tube inner diameter
+PVC_WT                  = 3;                        // PVC tube wall thickness
+PVC_OD                  = PVC_ID + 2* PVC_WT;       // PVC tube outer diameter = 42
+LenghtHorizontalPVC     = 240;                      // PVC tube lenghts - NOT PRINTED
 
-Casingx=70;
-Casingy=70;
-Casingz=120;
+// PVC Tube - Positioning 
+PVC_dx                  = 10;                       // How far should the tupe be away from x=0 
+PVC_dy                  = 31;                       // How far should the tupe be away from y=0 
+PVC_dz                  = 63;                       // How far should the tupe be away from z=0 
+PVC_Translation         = [PVC_dx,PVC_dy,PVC_dz];   // Total translation of the tube
+PVC_Rotation            = [-3,0,20];                // Rotation of tube
 
 
+
+// ******************************************** //
+// *                Modules                   * //
+// ******************************************** //
+
+
+// *                VUK Case Cube
+// * 
+// VUK Case Full Cube
 module VUKCasingCube()
 {
-    rotate([0,0,10])
-    translate([6,0,0])
-    translate([-(Casingx/2),-(Casingy/2),0])
-    cube([Casingx,Casingy,Casingz]);
+    rotate(Case_Rotation)
+    translate(Case_Translation)
+    
+    // Centre x, left allign y , and zero z 
+    translate([-(Case_x/2),-(Case_y/2),0])
+    cube([Case_x,Case_y,Case_z]);
 }
+//
 
-
-// Modules PVC tube on exit
+// *                PVC tube
+// *
+// * Modules PVC tube on exit
 module hollowhorizontaltube()
 {
 
     difference()
     {
-        translate([PVC_dx,PVC_dy,PVC_dz]) rotate(PVC_Rotation)fullhorizontaltube();
-        translate([PVC_dx,PVC_dy,PVC_dz]) rotate(PVC_Rotation)innerhorizontaltube();
+        translate(PVC_Translation) rotate(PVC_Rotation)fullhorizontaltube();
+        translate(PVC_Translation) rotate(PVC_Rotation)innerhorizontaltube();
         VUKCasingCube();
     }
 }
@@ -107,7 +132,15 @@ module innerhorizontaltube()
     translate([0,0,0])
     cylinder(h=LenghtHorizontalPVC+1,d=PVC_ID,center=true);
 }
-// END Modules PVC tube on exit
+//
+
+
+
+
+
+
+// ********************  TO DO **************** //
+
 
 
 
@@ -117,7 +150,6 @@ HightVerticalPVC = 100;                         // Dummy cilinder height/length 
 
 // Variables Ball Path
 BallPathDiameter = 36;                          // Diameter of space for ball to travel through 
-
 
 
 
@@ -383,8 +415,8 @@ module VUKCasing()
         fullhorizontaltube();
 
         rotate([0,0,-10])
-    translate([-(Casingx/2)+6,-(Casingy/2)+0,0])
-    cube([Casingx,Casingy,Casingz]);
+    translate([-(Case_x/2)+6,-(Case_y/2)+0,0])
+    cube([Case_x,Case_y,Case_z]);
     }
     }
 
@@ -396,10 +428,27 @@ module VUKCasing()
 
 //VUKSpace();
 //VUKCasingCube();
-
+//
 VUKCasing();
-color("green")hollowhorizontaltube();
+//color("green")hollowhorizontaltube();
+//
+//fullBallPath();
 
 
 
+//minkowski()
+//    {
+//    union()
+//        {
+//        cube(10);
+//        translate([0,0,12])cube(10);
+//        }
+//    sphere(5);
+//    }
 
+
+//hull(){
+//    cube(10, center=true);
+//    translate([6,7,8]) 
+//    sphere(4);
+//}
