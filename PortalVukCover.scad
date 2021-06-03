@@ -8,10 +8,8 @@
 // *  Version 0.2                             * //
 // *                                          * //
 // *  To Do:                                  * //
-// *    - Remove errors:                      * //
-// *        margin betweew block and z-plane  * //
 // *    - Add holes for inserts M3            * //
-// *    -                                     * //
+// *    - Create ball path variables          * //
 // *    -                                     * //
 // *                                          * //
 // ******************************************** //
@@ -91,24 +89,22 @@ PVC_Rotation            = [-3,0,20];                // Rotation of tube
 
 // *                VUK & Ball Path 
 // * 
-VUK_Width               =26;                        // Width of arc of VUK
-VUKr                    =48;                        // High of arc of VUK 
+// VUK
+VUK_Width               = 26;                       // Width of arc of VUK
+VUKr                    = 48;                       // High of arc of VUK 
 VUKthickness            = 10;                       // Thickness of extruded arc
-blockVUKx = 42;
-blockVUKy = 30;
-blockVUKz = 54;
+blockVUKx               = 42;                       // Size of hole for lower part of VUK
+blockVUKy               = 30;                       // Size of hole for lower part of VUK
+blockVUKz               = 54;                       // Size of hole for lower part of VUK
+TopedgeVUKx             = 5;                        // Size of hole for top edge part of VUK
+TopedgeVUKy             = 35;                       // Size of hole for top edge part of VUK
+TopedgeVUKz             = 98;                       // Size of hole for top edge part of VUK
+TopEdgeVuk_Translate    = [0,17,0];                 // Measured translation of VUK top edge from block
+RotationOfVUK           = [0,0,-20];                // Rotation of VUK
+VUKTranslation          = [0,-48,0];                // Measured translation of VUK from center
 
-
-
-RotationOfVUK =[0,0,-20];
-VUKTranslation = [0,-48,0];
-
-TopedgeVUKx =5;
-TopedgeVUKy =35;
-TopedgeVUKz =98;
-TopEdgeVuk_Translate =[0,17,0];
-
-
+// Ball Path
+// To be created from numbers in modules            // To Be created
 
 // *                VUK Case - Final Part
 // * 
@@ -210,8 +206,8 @@ module VUKCasing()
 
         // ********************  TO DO **************** /
 
-        //remove VUKspace
-        VUKSpace();
+        //remove VUKandBallPath
+        VUKandBallPath();
     }
 }
 
@@ -221,18 +217,16 @@ module VUKCasing()
 //
 // *                VUK & Ball Path
 // * 
-
-
-
-
-module BlockVUK()
+// Cube part of VUK
+module BlockVUK()                                   // Part that is removed so use margin
 {
     // Centered correctly
     translate([-blockVUKx/2,0,-MarginTranslate])
     cube([blockVUKx,blockVUKy, blockVUKz+MarginSize]);
 }
 
-module ArcVUK()
+// Arc part of VUK
+module ArcVUK()                                     // Overlap is in lower parts of VUK so NO margin
 {
     // Centered correctly
     translate([-VUK_Width/2,VUKr,0])
@@ -243,8 +237,8 @@ module ArcVUK()
     square(size = [VUKthickness, VUK_Width], center = false);
 }
 
-
-module TopedgeVUK()
+//TopEdge part of VUK
+module TopedgeVUK()                                 // Part that is removed so use margin
 {
     // Centered correctly
     translate([-TopedgeVUKx/2,0,-MarginTranslate])
@@ -252,8 +246,8 @@ module TopedgeVUK()
 }
 
 
-
-module VUK()
+// Combined VUK
+module VUK()                                        //  Merged part with margins in it so NO extra margin
 {
     //Move entire VUK
     rotate(RotationOfVUK)
@@ -271,23 +265,9 @@ module VUK()
     }
 }
 
-
-module fullBallPath()
-{
-    union()
-    {
-        Ballpath1();
-        Ballpath2();
-        Ballpath3();
-        BallPath4();
-        BallPath5();
-    }
-}
-
-
-
-
-module Ballpath1()
+//
+// Ball Path Modules
+module Ballpath1()                                  // Part that is removed so use margin
 {
     translate([0,0,-MarginTranslate])
     cylinder(h=blockVUKz+MarginSize,d=PVC_ID,center=false);
@@ -295,11 +275,11 @@ module Ballpath1()
 
 
 
-module Ballpath2()
+module Ballpath2()                                  // Overlap is in lower parts of VUK so NO margin
 {
     rotate(RotationOfVUK)
 
-    //Raise z to stand on top of BlockVUK
+    //Raise z to stand on top of Ballpath1
     translate([0,0,blockVUKz])
     
     // Centered correctly
@@ -312,11 +292,11 @@ module Ballpath2()
 
 
 
-module Ballpath3()
+module Ballpath3()                                  // Overlap in measurements so NO extra margin
 {
 
-    //Raise z to stand on top of BlockVUK
-    translate([7,20,blockVUKz+30])
+    //Raise z to fit with overlap to Ballpath2
+    translate([7,20,blockVUKz+30])                  // Manual fitting
     rotate([-90,90,-20]) 
         
     // Centered correctly
@@ -328,24 +308,25 @@ module Ballpath3()
 }
 
 
-module BallPath4()
+module BallPath4()                                   // Part that is removed so use margin
 {
-        rotate(RotationOfVUK)
+    rotate(RotationOfVUK)
     translate([-PVC_ID/2,-PVC_ID/2-1,0-MarginTranslate])
     cube([PVC_ID,PVC_ID/2,blockVUKz+MarginSize]);
 }
 
 
 
-module BallPath5()
+module BallPath5()                                   // Overlap in measurements so NO extra margin
 {
-        rotate(RotationOfVUK)
-    union(){
-    translate([-VUK_Width/2,-PVC_ID/2+10,blockVUKz+15])
-    cube([VUK_Width,PVC_ID/2,22]);      
+    rotate(RotationOfVUK)
+    union()
+    {
+        translate([-VUK_Width/2,-8,blockVUKz+15])   // Manual fitting
+        cube([VUK_Width,18,22]);                    // Manual fitting    
     
-        translate([-VUK_Width/2,-PVC_ID/2-1,blockVUKz])
-    cube([VUK_Width,12,26]);
+        translate([-VUK_Width/2,-19,blockVUKz])     // Manual fitting
+        cube([VUK_Width,12,26]);                    // Manual fitting
     }
 }
 
@@ -353,27 +334,39 @@ module BallPath5()
 
 
 
-module VUKSpace()
+
+
+
+module CombinedBallPath()
+{
+    union()
+    {
+        Ballpath1();
+        Ballpath2();
+        Ballpath3();
+        BallPath4();
+        BallPath5();
+    }
+}
+
+
+//
+// Conbined VUK and Ball Path
+module VUKandBallPath()
 {
     union()
     {
         VUK();
-        fullBallPath();
-
+        CombinedBallPath();
     }
 }
 
 
-
-
+//
+//
+// *                Render
+// Render Final part
 VUKCasing();
+
+// Optional Render
 //color("green")HollowHorizontalTube();
-//VUK();
-//ArcVUK();
-
-
-
-
-
-
-
