@@ -46,15 +46,26 @@
 // ******************************************** //
 // *                Variables                 * //
 // ******************************************** //
+
+
+// *                Render Resolution
+// *                
 //$fn=180;
-Overlap=0.01;
+
+// *                Margins
+// *   
+// Margin for objects to be merged or removed
+MarginSize=0.010;
+//MarginSize=10;
+
+MarginTranslate=MarginSize/2;
 
 
 // *                VUK Case Cube
 // *                
 // VUK Case Cube - Size
 Case_x=70;
-Case_y=70;
+Case_y=76;
 Case_z=120;
 
 // VUK Case Cube - Positioning
@@ -72,70 +83,116 @@ PVC_OD                  = PVC_ID + 2* PVC_WT;       // PVC tube outer diameter =
 LenghtHorizontalPVC     = 240;                      // PVC tube lenghts - NOT PRINTED
 
 // PVC Tube - Positioning 
-PVC_dx                  = 10;                       // How far should the tupe be away from x=0 
-PVC_dy                  = 31;                       // How far should the tupe be away from y=0 
-PVC_dz                  = 63;                       // How far should the tupe be away from z=0 
+PVC_dx                  = 21;                       // How far should the tupe be away from x=0 
+PVC_dy                  = 26;                       // How far should the tupe be away from y=0 
+PVC_dz                  = 64;                       // How far should the tupe be away from z=0 
 PVC_Translation         = [PVC_dx,PVC_dy,PVC_dz];   // Total translation of the tube
 PVC_Rotation            = [-3,0,20];                // Rotation of tube
+
+// *                VUK Case - Final Part
+// * 
+// Case Entry Hole
+EntryHole_x=45;                                     // x of cube and lenght of cylinder used to create entry hole
+EntryHole_y=PVC_ID;                                 // y of cube and diameter of cylinder used to create entry hole
+EntryHole_z=30;                                     // Height of cube and center of cylinder used to create entry hole
+
 
 
 
 // ******************************************** //
 // *                Modules                   * //
 // ******************************************** //
-
-
+//
+//
 // *                VUK Case Cube
 // * 
-// VUK Case Full Cube
-module VUKCasingCube()
+// VUK Case Full Cube                               // Not merged or part that is removed so NO margin
+module VUKCasingCube(Reduced_y=0)
 {
     rotate(Case_Rotation)
     translate(Case_Translation)
     
     // Centre x, left allign y , and zero z 
     translate([-(Case_x/2),-(Case_y/2),0])
-    cube([Case_x,Case_y,Case_z]);
+    cube([Case_x,Case_y-Reduced_y,Case_z]);
 }
 //
-
+//
 // *                PVC tube
 // *
 // * Modules PVC tube on exit
-module hollowhorizontaltube()
+module HollowHorizontalTube()                       // Not merged or part that is removed so NO margin
 {
-
+    rotate(PVC_Rotation) translate(PVC_Translation) 
     difference()
     {
-        translate(PVC_Translation) rotate(PVC_Rotation)fullhorizontaltube();
-        translate(PVC_Translation) rotate(PVC_Rotation)innerhorizontaltube();
-        VUKCasingCube();
+        FullHorizontalTube();
+        InnerHorizontalTube();
     }
 }
 
 
-module fullhorizontaltube()
+module FullHorizontalTube()                         // Not merged, removed but meant to be precise so NO margin
 {
     // Centre x, left allign y , and zero z 
     translate([0,LenghtHorizontalPVC/2,PVC_OD/2])
     rotate([-90,0,0])
-    translate([0,0,0])
     cylinder(h=LenghtHorizontalPVC,d=PVC_OD,center=true);
 }
 
 
-module innerhorizontaltube()
+module InnerHorizontalTube()                        // Part that is removed so use margin
 {
     // Centre x, left allign y , and zero z 
-    translate([0,LenghtHorizontalPVC/2 ,PVC_OD/2])
+    translate([0, LenghtHorizontalPVC/2 , PVC_OD/2])
     rotate([-90,0,0])
-    translate([0,0,0])
-    cylinder(h=LenghtHorizontalPVC+1,d=PVC_ID,center=true);
+    cylinder(h=(LenghtHorizontalPVC + MarginSize), d=PVC_ID, center=true);
 }
 //
+//
+// *                VUK Case - Final Part
+// * 
+// Entry Hole
+module CaseEntryHole()                         // Part that is removed so use margin
+{
+    //hole arc
+    rotate(Case_Rotation)
+    translate([EntryHole_x/2,0,EntryHole_z])
+    rotate([0,90,0])
+    cylinder(h=EntryHole_x,d=EntryHole_y,center=true);
+    //hole base
+    rotate(Case_Rotation)
+    translate([EntryHole_x/2 ,0,EntryHole_z/2- MarginTranslate])
+    cube([EntryHole_x,EntryHole_y,EntryHole_z+MarginSize], center=true);
+}
 
+module CaseExitHole()                               // Not merged, removed but meant to be precise so NO margin
+{
+    // remove outer diameter PVC exit hole
+    rotate(PVC_Rotation)        
+    translate(PVC_Translation)
+    FullHorizontalTube();
+}
 
+// VUK Case Final Part                              // Final Part so NO margin
+module VUKCasing()
+{
+    difference()
+    {
+        VUKCasingCube();
+        
+        // remove entry archway
+        CaseEntryHole();
+        
+        // remove exit hole and PVC tube connection
+        CaseExitHole();
 
+        // ********************  TO DO **************** /
+
+        //remove VUKspace
+        VUKSpace();
+    }
+}
 
 
 
@@ -196,55 +253,20 @@ module ArcVUK()
 }
 
 
-module ArcVUK2()
-{
-    VUKh2 = VUKh+2;
-    //Move match BlockVUK positive Y
-    translate([0,blockVUKy-VUKthickness,0])
-    //Raise z to stand on top of BlockVUK
-    translate([0,0,blockVUKz])
-    
-    // Centered correctly
-    translate([-VUKh2/2,VUKr,0])
-    //create Arc
-    rotate([180,-90,0])
-    rotate_extrude(angle=90,convexity = 10)
-    translate([VUKr-VUKthickness,0,0])
-    square(size = [VUKthickness, VUKh2], center = false);
-}
 
 module BlockVUK()
 {
     // Centered correctly
-    translate([-blockVUKx/2,0,0])
-    cube([blockVUKx,blockVUKy, blockVUKz]);
+    translate([-blockVUKx/2,-17,-MarginTranslate])
+    cube([blockVUKx,blockVUKy+17, blockVUKz+MarginSize]);
 }
-
-
-
-
-module woodblockVUK()
-{
-    // Centered correctly
-    translate([-blockVUKx/2,-15,blockVUKz-woodblockVUKz])
-    cube([blockVUKx,15, woodblockVUKz]);
-}
-
-module UnderwoodblockVUK()
-{
-    // Centered correctly
-    translate([-blockVUKx/2,-16,0])
-    cube([blockVUKx,17, blockVUKz]);
-}
-
-
 
 
 module TopedgeVUK()
 {
     // Centered correctly
-    translate([-TopedgeVUKx/2,0,0])
-    cube([TopedgeVUKx,TopedgeVUKy, TopedgeVUKz]);
+    translate([-TopedgeVUKx/2,0,-MarginTranslate])
+    cube([TopedgeVUKx,TopedgeVUKy, TopedgeVUKz+MarginSize]);
 }
 
 
@@ -256,36 +278,35 @@ module VUK()
     union()
     {
             
-        ArcVUK();
         BlockVUK();
-        woodblockVUK();
+        ArcVUK();
         TopedgeVUK();
     }
 }
 
 
-module VUK2()
+module fullBallPath()
 {
-    //Move entire VUK
-    rotate(RotationOfVUK)
-    translate(TranslationOfVUK)
     union()
     {
-            
-        ArcVUK2();
-        BlockVUK();
-        woodblockVUK();
+        Ballpath1();
+        Ballpath2();
+        Ballpath3();
+        BallPath4();
+        BallPath5();
     }
 }
-
 
 
 
 
 module Ballpath1()
 {
-    cylinder(h=blockVUKz,d=PVC_ID,center=false);
+    translate([0,0,-MarginTranslate])
+    cylinder(h=blockVUKz+MarginSize,d=PVC_ID,center=false);
 }
+
+
 
 module Ballpath2()
 {
@@ -304,20 +325,19 @@ module Ballpath2()
 }
 
 
+
 module Ballpath3()
 {
 
-
-
     //Raise z to stand on top of BlockVUK
-translate([8,20,blockVUKz+30])
+translate([7,20,blockVUKz+30])
    rotate([-90,90,-20]) 
         
     // Centered correctly
-    translate([0,30,0])
+    translate([0,20,8])
     rotate([90,0,-90])
     rotate_extrude(angle=40,convexity = 10)
-    translate([30,0,0])
+    translate([20,0,0])
     circle(d=PVC_ID);
 }
 
@@ -325,8 +345,8 @@ translate([8,20,blockVUKz+30])
 module BallPath4()
 {
         rotate(RotationOfVUK)
-    translate([-PVC_ID/2,-PVC_ID/2-1,0])
-    cube([PVC_ID,PVC_ID/2,blockVUKz]);
+    translate([-PVC_ID/2,-PVC_ID/2-1,0-MarginTranslate])
+    cube([PVC_ID,PVC_ID/2,blockVUKz+MarginSize]);
 }
 
 
@@ -338,36 +358,14 @@ module BallPath5()
     translate([-VUKh/2,-PVC_ID/2+10,blockVUKz+15])
     cube([VUKh,PVC_ID/2,22]);      
     
-        translate([-VUKh/2,-PVC_ID/2,blockVUKz])
-    cube([VUKh,10,26]);
+        translate([-VUKh/2,-PVC_ID/2-1,blockVUKz])
+    cube([VUKh,12,26]);
     }
 }
 
-module fullBallPath()
-{
-    difference()
-    { 
-        union()
-        {
-            Ballpath1();
-            Ballpath2();
-            Ballpath3();
-            BallPath4();
-            BallPath5();
-        }
-        
-      //  VUK2();
-    }
-    
-}
 
-module VUKspaceUnderneath()
-{
-    rotate(RotationOfVUK)
-    translate(TranslationOfVUK)
-    UnderwoodblockVUK();  
 
-}
+
 
 module VUKSpace()
 {
@@ -375,80 +373,20 @@ module VUKSpace()
     {
         VUK();
         fullBallPath();
-        VUKspaceUnderneath();
+
     }
 }
 
 
 
 
-
-
-
-
-
-
-
-module VUKCasing()
-{
-    difference()
-    {
-        VUKCasingCube();
-        //remove VUKspace
-        VUKSpace();
-        
-        //remove entry archway
-        //hole arc
-        rotate([0,0,10])
-        translate([HightVerticalPVC/2,0,30])
-        rotate([0,90,0])
-        cylinder(h=HightVerticalPVC,d=PVC_ID,center=true);
-        //hole base
-       rotate([0,0,10])
-        translate([20,0,11])
-        cube([45,PVC_ID,41], center=true);
-
-    //remove outer diameter exit hole
-     translate([22,0,HightVerticalPVC-37])rotate([0,0,20]) 
-    difference()
-    {
-        fullhorizontaltube();
-
-        rotate([0,0,-10])
-    translate([-(Case_x/2)+6,-(Case_y/2)+0,0])
-    cube([Case_x,Case_y,Case_z]);
-    }
-    }
-
-}
-
-
-
-
-
-//VUKSpace();
-//VUKCasingCube();
-//
 VUKCasing();
-//color("green")hollowhorizontaltube();
-//
-//fullBallPath();
+color("green")HollowHorizontalTube();
+//VUKSpace();
 
 
 
-//minkowski()
-//    {
-//    union()
-//        {
-//        cube(10);
-//        translate([0,0,12])cube(10);
-//        }
-//    sphere(5);
-//    }
 
 
-//hull(){
-//    cube(10, center=true);
-//    translate([6,7,8]) 
-//    sphere(4);
-//}
+
+
