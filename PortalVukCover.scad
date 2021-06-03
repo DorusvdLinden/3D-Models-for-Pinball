@@ -89,6 +89,27 @@ PVC_dz                  = 64;                       // How far should the tupe b
 PVC_Translation         = [PVC_dx,PVC_dy,PVC_dz];   // Total translation of the tube
 PVC_Rotation            = [-3,0,20];                // Rotation of tube
 
+// *                VUK & Ball Path 
+// * 
+VUK_Width               =26;                        // Width of arc of VUK
+VUKr                    =48;                        // High of arc of VUK 
+VUKthickness            = 10;                       // Thickness of extruded arc
+blockVUKx = 42;
+blockVUKy = 30;
+blockVUKz = 54;
+
+
+
+RotationOfVUK =[0,0,-20];
+VUKTranslation = [0,-48,0];
+
+TopedgeVUKx =5;
+TopedgeVUKy =35;
+TopedgeVUKz =98;
+TopEdgeVuk_Translate =[0,17,0];
+
+
+
 // *                VUK Case - Final Part
 // * 
 // Case Entry Hole
@@ -153,7 +174,7 @@ module InnerHorizontalTube()                        // Part that is removed so u
 // *                VUK Case - Final Part
 // * 
 // Entry Hole
-module CaseEntryHole()                         // Part that is removed so use margin
+module CaseEntryHole()                              // Part that is removed so use margin
 {
     //hole arc
     rotate(Case_Rotation)
@@ -196,69 +217,30 @@ module VUKCasing()
 
 
 
-// ********************  TO DO **************** //
+//
+//
+// *                VUK & Ball Path
+// * 
 
-
-
-
-
-// Dummy Variables
-HightVerticalPVC = 100;                         // Dummy cilinder height/length for removal of space 
-
-// Variables Ball Path
-BallPathDiameter = 36;                          // Diameter of space for ball to travel through 
-
-
-
-//vuk=arced 1/4 circle segment 
-VUKh=26;    // width of arc
-VUKr=48;  // VUKy=48;  
-            // VUKz=48;
-VUKthickness = 10;
-blockVUKx = 42;
-blockVUKy= 13;//  =PVC_OD -33; // 35+6-33=8
-blockVUKz = 54;
-
-RotationOfVUK =[0,0,-20];
-TranslationOfVUK =[0,-(PVC_ID/2+blockVUKy),0];
-
-woodblockVUKz =10;
-
-
-
-TopedgeVUKx =5;
-TopedgeVUKy =35;
-TopedgeVUKz =98;
-
-
-
-
-
-
-
-module ArcVUK()
-{
-    //Move match BlockVUK positive Y
-    translate([0,blockVUKy-VUKthickness,0])
-    //Raise z to stand on top of BlockVUK
-    translate([0,0,blockVUKz])
-    
-    // Centered correctly
-    translate([-VUKh/2,VUKr,0])
-    //create Arc
-    rotate([180,-90,0])
-    rotate_extrude(angle=90,convexity = 10)
-    translate([VUKr-VUKthickness,0,0])
-    square(size = [VUKthickness, VUKh], center = false);
-}
 
 
 
 module BlockVUK()
 {
     // Centered correctly
-    translate([-blockVUKx/2,-17,-MarginTranslate])
-    cube([blockVUKx,blockVUKy+17, blockVUKz+MarginSize]);
+    translate([-blockVUKx/2,0,-MarginTranslate])
+    cube([blockVUKx,blockVUKy, blockVUKz+MarginSize]);
+}
+
+module ArcVUK()
+{
+    // Centered correctly
+    translate([-VUK_Width/2,VUKr,0])
+    //create Arc
+    rotate([180,-90,0])
+    rotate_extrude(angle=90,convexity = 10)
+    translate([VUKr-VUKthickness,0,0])
+    square(size = [VUKthickness, VUK_Width], center = false);
 }
 
 
@@ -270,17 +252,22 @@ module TopedgeVUK()
 }
 
 
+
 module VUK()
 {
     //Move entire VUK
     rotate(RotationOfVUK)
-    translate(TranslationOfVUK)
+    translate(VUKTranslation)                            // measured
+    
     union()
     {
-            
         BlockVUK();
+        
+        translate([0,blockVUKy-VUKthickness,blockVUKz])     // Move match BlockVUK (block y - arc thickness) and to stand on top of BlockVUK 
         ArcVUK();
-        TopedgeVUK();
+        
+        translate(TopEdgeVuk_Translate) 
+        TopedgeVUK();             
     }
 }
 
@@ -311,7 +298,6 @@ module Ballpath1()
 module Ballpath2()
 {
     rotate(RotationOfVUK)
-//    translate(TranslationOfVUK)
 
     //Raise z to stand on top of BlockVUK
     translate([0,0,blockVUKz])
@@ -330,8 +316,8 @@ module Ballpath3()
 {
 
     //Raise z to stand on top of BlockVUK
-translate([7,20,blockVUKz+30])
-   rotate([-90,90,-20]) 
+    translate([7,20,blockVUKz+30])
+    rotate([-90,90,-20]) 
         
     // Centered correctly
     translate([0,20,8])
@@ -355,11 +341,11 @@ module BallPath5()
 {
         rotate(RotationOfVUK)
     union(){
-    translate([-VUKh/2,-PVC_ID/2+10,blockVUKz+15])
-    cube([VUKh,PVC_ID/2,22]);      
+    translate([-VUK_Width/2,-PVC_ID/2+10,blockVUKz+15])
+    cube([VUK_Width,PVC_ID/2,22]);      
     
-        translate([-VUKh/2,-PVC_ID/2-1,blockVUKz])
-    cube([VUKh,12,26]);
+        translate([-VUK_Width/2,-PVC_ID/2-1,blockVUKz])
+    cube([VUK_Width,12,26]);
     }
 }
 
@@ -381,8 +367,9 @@ module VUKSpace()
 
 
 VUKCasing();
-color("green")HollowHorizontalTube();
-//VUKSpace();
+//color("green")HollowHorizontalTube();
+//VUK();
+//ArcVUK();
 
 
 
