@@ -50,6 +50,8 @@
 // *                
 //$fn=180;
 
+$fn = $preview ? 24 : 180;
+
 // *                Margins
 // *   
 // Margin for objects to be merged or removed
