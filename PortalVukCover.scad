@@ -40,6 +40,19 @@
 // ******************************************** //
 
 
+// ******************************************** //
+// *                Insert test part          * //
+// ******************************************** //
+
+module M3InsertHole(Insert_D=4, Insert_H=6.7)
+{
+    // Centre x & y , and zero z 
+    translate([0,0,Insert_H/2]) 
+    cylinder(h=Insert_H, d=Insert_D,center = true);
+}
+
+
+
 
 // ******************************************** //
 // *                Variables                 * //
@@ -48,16 +61,13 @@
 
 // *                Render Resolution
 // *                
-//$fn=180;
-
 $fn = $preview ? 24 : 180;
+
 
 // *                Margins
 // *   
 // Margin for objects to be merged or removed
 MarginSize=0.010;
-//MarginSize=10;
-
 MarginTranslate=MarginSize/2;
 
 
@@ -80,6 +90,7 @@ Case_RotationReverse    = [0,0,-10];                // Rotation of VUK case
 PVC_ID                  = 36;                       // PVC tube inner diameter
 PVC_WT                  = 3;                        // PVC tube wall thickness
 PVC_OD                  = PVC_ID + 2* PVC_WT;       // PVC tube outer diameter = 42
+PVC_Margin              = 1;                        // PVC OD margin
 LenghtHorizontalPVC     = 240;                      // PVC tube lenghts - NOT PRINTED
 
 // PVC Tube - Positioning 
@@ -151,12 +162,12 @@ module HollowHorizontalTube()                       // Not merged or part that i
 }
 
 
-module FullHorizontalTube()                         // Not merged, removed but meant to be precise so NO margin
+module FullHorizontalTube()                         // Not merged, removed and small margin to allow fit of PVC
 {
     // Centre x, left allign y , and zero z 
     translate([0,LenghtHorizontalPVC/2,PVC_OD/2])
     rotate([-90,0,0])
-    cylinder(h=LenghtHorizontalPVC,d=PVC_OD,center=true);
+    cylinder(h=LenghtHorizontalPVC,d=PVC_OD+PVC_Margin,center=true);
 }
 
 
@@ -167,54 +178,6 @@ module InnerHorizontalTube()                        // Part that is removed so u
     rotate([-90,0,0])
     cylinder(h=(LenghtHorizontalPVC + MarginSize), d=PVC_ID, center=true);
 }
-//
-//
-// *                VUK Case - Final Part
-// * 
-// Entry Hole
-module CaseEntryHole()                              // Part that is removed so use margin
-{
-    //hole arc
-    rotate(Case_Rotation)
-    translate([EntryHole_x/2,0,EntryHole_z])
-    rotate([0,90,0])
-    cylinder(h=EntryHole_x,d=EntryHole_y,center=true);
-    //hole base
-    rotate(Case_Rotation)
-    translate([EntryHole_x/2 ,0,EntryHole_z/2- MarginTranslate])
-    cube([EntryHole_x,EntryHole_y,EntryHole_z+MarginSize], center=true);
-}
-
-module CaseExitHole()                               // Not merged, removed but meant to be precise so NO margin
-{
-    // remove outer diameter PVC exit hole
-    rotate(PVC_Rotation)        
-    translate(PVC_Translation)
-    FullHorizontalTube();
-}
-
-// VUK Case Final Part                              // Final Part so NO margin
-module VUKCasing()
-{
-    difference()
-    {
-        VUKCasingCube();
-        
-        // remove entry archway
-        CaseEntryHole();
-        
-        // remove exit hole and PVC tube connection
-        CaseExitHole();
-
-        // ********************  TO DO **************** /
-
-        //remove VUKandBallPath
-        VUKandBallPath();
-    }
-}
-
-
-
 //
 //
 // *                VUK & Ball Path
@@ -249,7 +212,7 @@ module TopedgeVUK()                                 // Part that is removed so u
 
 
 // Combined VUK
-module VUK()                                        //  Merged part with margins in it so NO extra margin
+module VUK()                                        // Merged part with margins in it so NO extra margin
 {
     //Move entire VUK
     rotate(RotationOfVUK)
@@ -310,7 +273,7 @@ module Ballpath3()                                  // Overlap in measurements s
 }
 
 
-module BallPath4()                                   // Part that is removed so use margin
+module BallPath4()                                  // Part that is removed so use margin
 {
     rotate(RotationOfVUK)
     translate([-PVC_ID/2,-PVC_ID/2-1,0-MarginTranslate])
@@ -319,7 +282,7 @@ module BallPath4()                                   // Part that is removed so 
 
 
 
-module BallPath5()                                   // Overlap in measurements so NO extra margin
+module BallPath5()                                  // Overlap in measurements so NO extra margin
 {
     rotate(RotationOfVUK)
     union()
@@ -339,7 +302,7 @@ module BallPath5()                                   // Overlap in measurements 
 
 
 
-module CombinedBallPath()
+module CombinedBallPath()                           // Merged part with margins in it so NO extra margin
 {
     union()
     {
@@ -354,7 +317,7 @@ module CombinedBallPath()
 
 //
 // Conbined VUK and Ball Path
-module VUKandBallPath()
+module VUKandBallPath()                             // Merged part with margins in it so NO extra margin
 {
     union()
     {
@@ -366,9 +329,58 @@ module VUKandBallPath()
 
 //
 //
+// *                VUK Case - Final Part
+// * 
+// Entry Hole
+module CaseEntryHole()                              // Part that is removed so use margin
+{
+    //hole arc
+    rotate(Case_Rotation)
+    translate([EntryHole_x/2,0,EntryHole_z])
+    rotate([0,90,0])
+    cylinder(h=EntryHole_x,d=EntryHole_y,center=true);
+    //hole base
+    rotate(Case_Rotation)
+    translate([EntryHole_x/2 ,0,EntryHole_z/2- MarginTranslate])
+    cube([EntryHole_x,EntryHole_y,EntryHole_z+MarginSize], center=true);
+}
+
+module CaseExitHole()                               // Not merged, removed but meant to be precise so NO margin
+{
+    // remove outer diameter PVC exit hole
+    rotate(PVC_Rotation)        
+    translate(PVC_Translation)
+    FullHorizontalTube();
+}
+
+// VUK Case Final Part                              // Final Part so NO margin
+module VUKCasing()
+{
+    difference()
+    {
+        VUKCasingCube();
+        
+        // remove entry archway
+        CaseEntryHole();
+        
+        // remove exit hole and PVC tube connection
+        CaseExitHole();
+
+        // ********************  TO DO **************** /
+
+        //remove VUKandBallPath
+        VUKandBallPath();
+    }
+}
+
+
+
+//
+//
 // *                Render
 // Render Final part
-VUKCasing();
+//VUKCasing();
 
-// Optional Render
+// Optional Renders
 //color("green")HollowHorizontalTube();
+M3InsertHole();
