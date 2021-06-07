@@ -5,12 +5,8 @@
 // *  Dorus van der Linden                    * //
 // *  Willem Godlieb                          * //
 // *                                          * //
-// *  Version 0.2                             * //
+// *  Version 0.9                             * //
 // *                                          * //
-// *  To Do:                                  * //
-// *    - Add holes for inserts M3            * //
-// *    - Create ball path variables          * //
-// *    -                                     * //
 // *                                          * //
 // ******************************************** //
 
@@ -41,7 +37,7 @@
 
 
 // ******************************************** //
-// *                Insert test part          * //
+// *                Insert Module             * //
 // ******************************************** //
 
 module M3InsertHole(Insert_D=4, Insert_H=6.7)
@@ -51,7 +47,17 @@ module M3InsertHole(Insert_D=4, Insert_H=6.7)
     cylinder(h=Insert_H, d=Insert_D,center = true);
 }
 
-
+module M3InsertTestBlock()
+{
+    difference()
+    {
+        translate([0,0,10]) cube([30,30,20], center = true);
+        translate([ 8, 8,-0.01]) M3InsertHole();
+        translate([-8, 8,-0.01]) M3InsertHole();
+        translate([ 8,-8,-0.01]) M3InsertHole();
+        translate([-8,-8,-0.01]) M3InsertHole();
+    }
+}
 
 
 // ******************************************** //
@@ -366,10 +372,18 @@ module VUKCasing()
         // remove exit hole and PVC tube connection
         CaseExitHole();
 
-        // ********************  TO DO **************** /
-
-        //remove VUKandBallPath
+        // remove VUKandBallPath
         VUKandBallPath();
+        
+        // remove InsertHoles
+        rotate(Case_Rotation)
+        translate(Case_Translation)
+        union()
+        {
+            translate([26,28,-MarginTranslate])M3InsertHole();
+            translate([-26,28,-MarginTranslate])M3InsertHole();
+            translate([26,-28,-MarginTranslate])M3InsertHole();
+        }
     }
 }
 
@@ -383,4 +397,5 @@ module VUKCasing()
 
 // Optional Renders
 //color("green")HollowHorizontalTube();
-M3InsertHole();
+M3InsertTestBlock();
+
