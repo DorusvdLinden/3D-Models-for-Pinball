@@ -374,7 +374,7 @@ module LEDHole()
     union()
     {
         rotate(Case_Rotation)
-        translate([15,-28,44])
+        translate([15,-28,84])
         sphere(d=4);
         
         rotate(Case_Rotation)
@@ -383,8 +383,15 @@ module LEDHole()
         cylinder(h=30, d=4, center=true);
         
         rotate(Case_Rotation)
-        translate([15,-28,19])
-        cylinder(h=50, d=4, center=true);
+        translate([15,-28,34])
+        cylinder(h=100, d=4, center=true);
+
+        rotate(Case_Rotation)
+        translate([30,-28,84])
+        rotate([0,90,0])
+        cylinder(h=30, d=4, center=true);
+
+
     }
 }
 
@@ -403,7 +410,7 @@ module WindowHole()
 
         rotate(Case_Rotation)
         rotate([0,0,90])
-        translate([37,-6,-5])  // x= (76/2, case depth/2)  - 1 depth)  z = half extra 10 height  y = -6 for translation
+        translate([37,-6,-70])  // x= (76/2, case depth/2)  - 1 depth)  z = half extra 10 height  y = -6 for translation
         cube([2,1,Case_z+10]);
 
         rotate(Case_Rotation)
