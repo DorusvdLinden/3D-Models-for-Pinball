@@ -468,6 +468,32 @@ module WindowHole()
         rotate([90,0,180])
         translate([28,60,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
         cube([2,1,Case_z+10]);   
+
+
+//bottom edge
+        rotate(Case_Rotation)
+        rotate([90,0,0])
+        translate([40,-1,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cube([2,2,Case_z+10]);     
+
+        rotate(Case_Rotation)
+        rotate([90,0,90])
+        translate([37,-1,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cube([2,2,Case_z+10]);   
+
+        rotate(Case_Rotation)
+        rotate([90,0,-90])
+        translate([37,-1,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cube([2,2,Case_z+10]);   
+
+
+        rotate(Case_Rotation)
+        rotate([90,0,180])
+        translate([28,-1,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cube([2,2,Case_z+10]);   
+
+
+
     }
         
 
