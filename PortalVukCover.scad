@@ -109,12 +109,12 @@ PVC_Rotation            = [-3,0,20];                // Rotation of tube
 // *                VUK & Ball Path 
 // * 
 // VUK
-VUK_Width               = 26;                       // Width of arc of VUK
+VUK_Width               = 26 +2;                       // Width of arc of VUK
 VUKr                    = 48;                       // High of arc of VUK 
-VUKthickness            = 10;                       // Thickness of extruded arc
+VUKthickness            = 10 ;                       // Thickness of extruded arc
 blockVUKx               = 42;                       // Size of hole for lower part of VUK
 blockVUKy               = 30;                       // Size of hole for lower part of VUK
-blockVUKz               = 54;                       // Size of hole for lower part of VUK
+blockVUKz               = 54 +2 ;                   // Size of hole for lower part of VUK
 TopedgeVUKx             = 5;                        // Size of hole for top edge part of VUK
 TopedgeVUKy             = 35;                       // Size of hole for top edge part of VUK
 TopedgeVUKz             = 98;                       // Size of hole for top edge part of VUK
@@ -205,7 +205,7 @@ module ArcVUK()                                     // Overlap is in lower parts
     rotate([180,-90,0])
     rotate_extrude(angle=90,convexity = 10)
     translate([VUKr-VUKthickness,0,0])
-    square(size = [VUKthickness, VUK_Width], center = false);
+    square(size = [VUKthickness +2, VUK_Width], center = false);
 }
 
 //TopEdge part of VUK
@@ -351,6 +351,16 @@ module CaseEntryHole()                              // Part that is removed so u
     cube([EntryHole_x,EntryHole_y,EntryHole_z+MarginSize], center=true);
 }
 
+module CaseEntryHole2 ()
+{
+    //hole arc
+    rotate(Case_Rotation)
+    translate([EntryHole_x/2,0,12])
+    rotate([0,90,0])
+    cylinder(h=EntryHole_x,r1=17, r2=34,center=true);  
+}
+
+
 module CaseExitHole()                               // Not merged, removed but meant to be precise so NO margin
 {
     // remove outer diameter PVC exit hole
@@ -358,6 +368,105 @@ module CaseExitHole()                               // Not merged, removed but m
     translate(PVC_Translation)
     FullHorizontalTube();
 }
+
+module LEDHole()
+{
+    union()
+    {
+        rotate(Case_Rotation)
+        translate([15,-28,44])
+        sphere(d=4);
+        
+        rotate(Case_Rotation)
+        translate([30,-28,44])
+        rotate([0,90,0])
+        cylinder(h=30, d=4, center=true);
+        
+        rotate(Case_Rotation)
+        translate([15,-28,19])
+        cylinder(h=50, d=4, center=true);
+    }
+}
+
+module WindowHole()
+{
+    union()
+    {
+        rotate(Case_Rotation)
+        translate([34,-36,70])  // y = 76/2  = 38 -2 edge = 36
+        cube([10,34,40]); // width = y =76/2 - 2*2 = 38-4 = 34
+        
+//Centers
+        rotate(Case_Rotation)
+        translate([40,0,60])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cube([2,1,Case_z+10]);
+
+        rotate(Case_Rotation)
+        rotate([0,0,90])
+        translate([37,-6,-5])  // x= (76/2, case depth/2)  - 1 depth)  z = half extra 10 height  y = -6 for translation
+        cube([2,1,Case_z+10]);
+
+        rotate(Case_Rotation)
+        rotate([0,0,-90])
+        translate([37,+6,-5])  // x= (76/2, case depth/2)  - 1 depth)  z = half extra 10 height  y = + 6 for translation
+        cube([2,1,Case_z+10]);
+        
+        rotate(Case_Rotation)
+        rotate([0,0,180])
+        translate([28,0,-5])  // x= (70/2, case depth/2) -6 (case translation) - 1 depth)  z = half extra 10 height
+        cube([2,1,Case_z+10]);
+        
+ 
+//edges
+
+        rotate(Case_Rotation)
+        translate([40,37,-5])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height, y=76/2 -1 = 37
+        cube([2,2,Case_z+10]);
+        
+        rotate(Case_Rotation)
+        translate([40,-39,-5])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height, y=-76/2 -1 = -39
+        cube([2,2,Case_z+10]); 
+
+
+        rotate(Case_Rotation)
+        rotate([0,0,-180])
+        translate([28,37,-5])  // x= (70/2, case depth/2) -6 (case translation) - 1 depth)  z = half extra 10 height, y=76/2 -1 = 37
+        cube([2,2,Case_z+10]);
+        
+        rotate(Case_Rotation)
+        rotate([0,0,-180])
+        translate([28,-39,-5])  // x= (70/2, case depth/2) -6 (case translation) - 1 depth)  z = half extra 10 height, y=-76/2 -1 = -39
+        cube([2,2,Case_z+10]); 
+
+
+
+//horizontal
+        rotate(Case_Rotation)
+        rotate([90,0,0])
+        translate([40,60,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cube([2,1,Case_z+10]);     
+
+        rotate(Case_Rotation)
+        rotate([90,0,90])
+        translate([37,60,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cube([2,1,Case_z+10]);   
+
+        rotate(Case_Rotation)
+        rotate([90,0,-90])
+        translate([37,60,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cube([2,1,Case_z+10]);   
+
+
+        rotate(Case_Rotation)
+        rotate([90,0,180])
+        translate([28,60,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cube([2,1,Case_z+10]);   
+    }
+        
+
+}
+
+
 
 // VUK Case Final Part                              // Final Part so NO margin
 module VUKCasing()
@@ -367,7 +476,7 @@ module VUKCasing()
         VUKCasingCube();
         
         // remove entry archway
-        CaseEntryHole();
+        CaseEntryHole2();
         
         // remove exit hole and PVC tube connection
         CaseExitHole();
@@ -375,14 +484,20 @@ module VUKCasing()
         // remove VUKandBallPath
         VUKandBallPath();
         
+        // remove LED holes
+        LEDHole();
+        
+        // remove textures
+        WindowHole();
+        
         // remove InsertHoles
         rotate(Case_Rotation)
         translate(Case_Translation)
         union()
         {
-            translate([26,28,-MarginTranslate])M3InsertHole();
+            translate([16,32,-MarginTranslate])M3InsertHole();
             translate([-26,28,-MarginTranslate])M3InsertHole();
-            translate([26,-28,-MarginTranslate])M3InsertHole();
+            translate([16,-32,-MarginTranslate])M3InsertHole();
         }
     }
 }
@@ -393,9 +508,13 @@ module VUKCasing()
 //
 // *                Render
 // Render Final part
-//VUKCasing();
+VUKCasing();
 
 // Optional Renders
-//color("green")HollowHorizontalTube();
-M3InsertTestBlock();
-
+//color("green")
+//HollowHorizontalTube();
+//M3InsertTestBlock();
+//VUK();
+//CaseEntr2Hole2 ();
+//LEDHole();
+//WindowHole();
