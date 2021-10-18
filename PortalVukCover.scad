@@ -251,7 +251,7 @@ module Ballpath2()                                  // Overlap is in lower parts
     rotate(RotationOfVUK)
 
     //Raise z to stand on top of Ballpath1
-    translate([0,0,blockVUKz])
+    translate([0,0,blockVUKz-2])
     
     // Centered correctly
     translate([0,30,0])
@@ -267,7 +267,7 @@ module Ballpath3()                                  // Overlap in measurements s
 {
 
     //Raise z to fit with overlap to Ballpath2
-    translate([7,20,blockVUKz+30])                  // Manual fitting
+    translate([7,20,blockVUKz-2+30])                  // Manual fitting
     rotate([-90,90,-20]) 
         
     // Centered correctly
