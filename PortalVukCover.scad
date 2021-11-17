@@ -415,9 +415,9 @@ module WindowHole()
     union()
     {
         rotate(Case_Rotation)
-        translate([34,-36,70])  // y = 76/2  = 38 -2 edge = 36
-        //cube([10,34,40]); // width = y =76/2 - 2*2 = 38-4 = 34
-        translate([10,0.5,-8])rotate([0,0,90])bar(w=34,dw=0,h1=5,h2=53,l=10);
+        translate([32,-34,70])  // y = 76/2  = 38 -2 edge = 36
+        cube([10,31,40]); // width = y =76/2 - 2*2 = 38-4 = 34
+        //translate([10,0.5,-5])rotate([0,0,90])bar(w=34,dw=0,h1=5,h2=48,l=10);
         
 //Centers
         rotate(Case_Rotation)
@@ -468,50 +468,31 @@ module WindowHole()
     //front
         rotate(Case_Rotation)
         rotate([90,0,0])
-        translate([40.5,60.5,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
-        //cube([2,1,Case_z+10]);  
-        cylinder(h=Case_z+10,d=1,$fn=45);
+        translate([41,60,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        scale([2,1,1])cylinder(h=Case_z+10,d=1,$fn=45);
         
-        rotate(Case_Rotation)
-        rotate([90,0,0])
-        translate([40.5,60,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
-        cube([2,1,Case_z+10]);       
+    
         
     // right (exit)
         rotate(Case_Rotation)
         rotate([90,0,90])
-        translate([37.5,60.5,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
-        cylinder(h=Case_z+10,d=1,$fn=45);
-
-        rotate(Case_Rotation)
-        rotate([90,0,90])
-        translate([37.5,60,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
-        cube([2,1,Case_z+10]); 
-
+        translate([38,60,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        scale([2,1,1])cylinder(h=Case_z+10,d=1,$fn=45);
+        
 
     //Left
         rotate(Case_Rotation)
         rotate([90,0,-90])
-        translate([37.5,60,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
-        cube([2,1,Case_z+10]);   
-
-        rotate(Case_Rotation)
-        rotate([90,0,-90])
-        translate([37.5,60.5,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
-        cylinder(h=Case_z+10,d=1,$fn=45);
-
+        translate([38,60,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        scale([2,1,1])cylinder(h=Case_z+10,d=1,$fn=45);
+        
 
     //back
         rotate(Case_Rotation)
         rotate([90,0,180])
-        translate([28.5,60,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
-        cube([2,1,Case_z+10]);   
-
-        rotate(Case_Rotation)
-        rotate([90,0,180])
-        translate([28.5,60.5,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
-        cylinder(h=Case_z+10,d=1,$fn=45);
-
+        translate([29,60,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        scale([2,1,1])cylinder(h=Case_z+10,d=1,$fn=45);
+        
 //bottom edge
         rotate(Case_Rotation)
         rotate([90,0,0])
