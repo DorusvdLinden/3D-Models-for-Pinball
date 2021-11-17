@@ -109,12 +109,12 @@ PVC_Rotation            = [-3,0,20];                // Rotation of tube
 // *                VUK & Ball Path 
 // * 
 // VUK
-VUK_Width               = 26;                       // Width of arc of VUK
+VUK_Width               = 26 +2;                       // Width of arc of VUK
 VUKr                    = 48;                       // High of arc of VUK 
-VUKthickness            = 10;                       // Thickness of extruded arc
-blockVUKx               = 42;                       // Size of hole for lower part of VUK
-blockVUKy               = 30;                       // Size of hole for lower part of VUK
-blockVUKz               = 54;                       // Size of hole for lower part of VUK
+VUKthickness            = 10 +2;                       // Thickness of extruded arc
+blockVUKx               = 42 +2;                       // Size of hole for lower part of VUK
+blockVUKy               = 30 +2;                       // Size of hole for lower part of VUK
+blockVUKz               = 54 +2 ;                   // Size of hole for lower part of VUK
 TopedgeVUKx             = 5;                        // Size of hole for top edge part of VUK
 TopedgeVUKy             = 35;                       // Size of hole for top edge part of VUK
 TopedgeVUKz             = 98;                       // Size of hole for top edge part of VUK
@@ -251,7 +251,7 @@ module Ballpath2()                                  // Overlap is in lower parts
     rotate(RotationOfVUK)
 
     //Raise z to stand on top of Ballpath1
-    translate([0,0,blockVUKz])
+    translate([0,0,blockVUKz-2])
     
     // Centered correctly
     translate([0,30,0])
@@ -267,7 +267,7 @@ module Ballpath3()                                  // Overlap in measurements s
 {
 
     //Raise z to fit with overlap to Ballpath2
-    translate([7,20,blockVUKz+30])                  // Manual fitting
+    translate([7,20,blockVUKz-2+30])                  // Manual fitting
     rotate([-90,90,-20]) 
         
     // Centered correctly
@@ -351,6 +351,16 @@ module CaseEntryHole()                              // Part that is removed so u
     cube([EntryHole_x,EntryHole_y,EntryHole_z+MarginSize], center=true);
 }
 
+module CaseEntryHole2 ()
+{
+    //hole arc
+    rotate(Case_Rotation)
+    translate([EntryHole_x/2,0,12])
+    rotate([0,90,0])
+    cylinder(h=EntryHole_x,r1=17, r2=34,center=true);  
+}
+
+
 module CaseExitHole()                               // Not merged, removed but meant to be precise so NO margin
 {
     // remove outer diameter PVC exit hole
@@ -358,6 +368,180 @@ module CaseExitHole()                               // Not merged, removed but m
     translate(PVC_Translation)
     FullHorizontalTube();
 }
+
+module LEDHole()
+{
+    union()
+    {
+        rotate(Case_Rotation)
+        translate([15,-28,84])
+        sphere(d=4);
+        
+        rotate(Case_Rotation)
+        translate([30,-28,44])
+        rotate([0,90,0])
+        cylinder(h=30, d=4, center=true);
+        
+        rotate(Case_Rotation)
+        translate([15,-28,34])
+        cylinder(h=100, d=4, center=true);
+
+        rotate(Case_Rotation)
+        translate([30,-28,84])
+        rotate([0,90,0])
+        cylinder(h=30, d=4, center=true);
+
+
+    }
+}
+
+
+
+    module bar(w=80,dw=15,l=210,h1=0,h2=50){
+        polyhedron(
+            points=[[0,0,0], [w,0,0], [w-dw,l,h1], [dw,l,h1], [0,0,h2 ], [w,0,h2], [w-dw,l,h2], [dw,l,h2] ],
+            faces=[
+                [0,1,2,3],  // bottom
+                [4,5,1,0],  // front
+                [7,6,5,4],  // top
+                [5,6,2,1],  // right
+                [6,7,3,2],  // back
+                [7,4,0,3]] // left
+        );
+    }
+
+module WindowHole()
+{
+    union()
+    {
+        rotate(Case_Rotation)
+        translate([34,-36,70])  // y = 76/2  = 38 -2 edge = 36
+        //cube([10,34,40]); // width = y =76/2 - 2*2 = 38-4 = 34
+        translate([10,0.5,-8])rotate([0,0,90])bar(w=34,dw=0,h1=5,h2=53,l=10);
+        
+//Centers
+        rotate(Case_Rotation)
+        translate([40,0,60])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cube([2,1,Case_z+10]);
+
+        rotate(Case_Rotation)
+        rotate([0,0,90])
+        translate([37,-6,-70])  // x= (76/2, case depth/2)  - 1 depth)  z = half extra 10 height  y = -6 for translation
+        cube([2,1,Case_z+10]);
+
+        rotate(Case_Rotation)
+        rotate([0,0,-90])
+        translate([37,+6,-5])  // x= (76/2, case depth/2)  - 1 depth)  z = half extra 10 height  y = + 6 for translation
+        cube([2,1,Case_z+10]);
+        
+        rotate(Case_Rotation)
+        rotate([0,0,180])
+        translate([28,0,-5])  // x= (70/2, case depth/2) -6 (case translation) - 1 depth)  z = half extra 10 height
+        cube([2,1,Case_z+10]);
+        
+ 
+//edges
+
+        rotate(Case_Rotation)
+        translate([40,37,-5])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height, y=76/2 -1 = 37
+        cube([2,2,Case_z+10]);
+        
+        
+        rotate(Case_Rotation)
+        translate([40,-39,-5])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height, y=-76/2 -1 = -39
+        cube([2,2,Case_z+10]); 
+
+
+        rotate(Case_Rotation)
+        rotate([0,0,-180])
+        translate([28,37,-5])  // x= (70/2, case depth/2) -6 (case translation) - 1 depth)  z = half extra 10 height, y=76/2 -1 = 37
+        cube([2,2,Case_z+10]);
+        
+        rotate(Case_Rotation)
+        rotate([0,0,-180])
+        translate([28,-39,-5])  // x= (70/2, case depth/2) -6 (case translation) - 1 depth)  z = half extra 10 height, y=-76/2 -1 = -39
+        cube([2,2,Case_z+10]); 
+
+
+
+//horizontal
+    //front
+        rotate(Case_Rotation)
+        rotate([90,0,0])
+        translate([40.5,60.5,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        //cube([2,1,Case_z+10]);  
+        cylinder(h=Case_z+10,d=1,$fn=45);
+        
+        rotate(Case_Rotation)
+        rotate([90,0,0])
+        translate([40.5,60,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cube([2,1,Case_z+10]);       
+        
+    // right (exit)
+        rotate(Case_Rotation)
+        rotate([90,0,90])
+        translate([37.5,60.5,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cylinder(h=Case_z+10,d=1,$fn=45);
+
+        rotate(Case_Rotation)
+        rotate([90,0,90])
+        translate([37.5,60,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cube([2,1,Case_z+10]); 
+
+
+    //Left
+        rotate(Case_Rotation)
+        rotate([90,0,-90])
+        translate([37.5,60,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cube([2,1,Case_z+10]);   
+
+        rotate(Case_Rotation)
+        rotate([90,0,-90])
+        translate([37.5,60.5,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cylinder(h=Case_z+10,d=1,$fn=45);
+
+
+    //back
+        rotate(Case_Rotation)
+        rotate([90,0,180])
+        translate([28.5,60,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cube([2,1,Case_z+10]);   
+
+        rotate(Case_Rotation)
+        rotate([90,0,180])
+        translate([28.5,60.5,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cylinder(h=Case_z+10,d=1,$fn=45);
+
+//bottom edge
+        rotate(Case_Rotation)
+        rotate([90,0,0])
+        translate([40,-1,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cube([2,2,Case_z+10]);     
+
+        rotate(Case_Rotation)
+        rotate([90,0,90])
+        translate([37,-1,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cube([2,2,Case_z+10]);   
+
+        rotate(Case_Rotation)
+        rotate([90,0,-90])
+        translate([37,-1,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cube([2,2,Case_z+10]);   
+
+
+        rotate(Case_Rotation)
+        rotate([90,0,180])
+        translate([28,-1,-55])  // x= (70/2, case depth/2) +6 (case translation) - 1 depth)  z = half extra 10 height
+        cube([2,2,Case_z+10]);   
+
+
+
+    }
+        
+
+}
+
+
 
 // VUK Case Final Part                              // Final Part so NO margin
 module VUKCasing()
@@ -367,7 +551,7 @@ module VUKCasing()
         VUKCasingCube();
         
         // remove entry archway
-        CaseEntryHole();
+        CaseEntryHole2();
         
         // remove exit hole and PVC tube connection
         CaseExitHole();
@@ -375,14 +559,20 @@ module VUKCasing()
         // remove VUKandBallPath
         VUKandBallPath();
         
+        // remove LED holes
+        LEDHole();
+        
+        // remove textures
+        WindowHole();
+        
         // remove InsertHoles
         rotate(Case_Rotation)
         translate(Case_Translation)
         union()
         {
-            translate([26,28,-MarginTranslate])M3InsertHole();
+            translate([16,32,-MarginTranslate])M3InsertHole();
             translate([-26,28,-MarginTranslate])M3InsertHole();
-            translate([26,-28,-MarginTranslate])M3InsertHole();
+            translate([16,-32,-MarginTranslate])M3InsertHole();
         }
     }
 }
@@ -393,9 +583,13 @@ module VUKCasing()
 //
 // *                Render
 // Render Final part
-//VUKCasing();
+VUKCasing();
 
 // Optional Renders
-//color("green")HollowHorizontalTube();
-M3InsertTestBlock();
-
+//HollowHorizontalTube();
+//color("green")
+//M3InsertTestBlock();
+//VUK();
+//CaseEntr2Hole2 ();
+//LEDHole();
+//WindowHole();
