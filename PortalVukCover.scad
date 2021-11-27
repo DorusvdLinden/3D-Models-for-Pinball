@@ -559,12 +559,23 @@ module VUKCasing()
 }
 
 
+module test_print() // small intersection with the full object, containing overhang, lines and led hole. (Willem)
+    {
+    intersection()
+        {
+        VUKCasing();
+        translate([35,-40,58])rotate(Case_Rotation)cube([20,50,30]);
+        }
+    }
+
+test_print();
+
 
 //
 //
 // *                Render
 // Render Final part
-VUKCasing();
+//VUKCasing();
 
 // Optional Renders
 //HollowHorizontalTube();
