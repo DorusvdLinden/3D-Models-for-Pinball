@@ -418,7 +418,7 @@ module WindowHole()
         translate([32,-34,70])  // y = 76/2  = 38 -2 edge = 36
         difference(){
             cube([10,31,40]); // width = y =76/2 - 2*2 = 38-4 = 34
-            translate([8.2,0,0]) cube ([5,31,0.4]); // width = y =76/2 - 2*2 = 38-4 = 34
+     #       translate([8.2,0,0]) cube ([5,31,1]); // width = y =76/2 - 2*2 = 38-4 = 34
         };
         //translate([10,0.5,-5])rotate([0,0,90])bar(w=34,dw=0,h1=5,h2=48,l=10);
         
