@@ -41,7 +41,7 @@ difference(){
         translate([0,0,30-0.001]) wedge();
     }
     translate([5,-0.001,0])  bar(w=70,h1=55,h2=90,l=220);
-    translate([70,220,0]) rotate([90,0,11]) cylinder(h=230,r=30);
+    translate([73,220,11]) rotate([90,0,11]) cylinder(h=230,r=30);
     translate([ 10,50,-0.01]) M3InsertHole();
     translate([ 30,180,-0.01]) M3InsertHole();
     translate([ 60,50,-0.01]) M3InsertHole();
