@@ -20,6 +20,15 @@ $fn = $preview ? 24 : 180;
     wall_thickness      =   4;
     round_edge_r        =   5;
     
+    
+    
+    module M3InsertHole(Insert_D=4, Insert_H=6.7)
+{
+    // Centre x & y , and zero z 
+    translate([0,0,Insert_H/2]) 
+    cylinder(h=Insert_H, d=Insert_D,center = true);
+}
+    
 difference(){
     
     union(){
@@ -46,7 +55,7 @@ difference(){
         
         translate([0,40-margin,0])cube([38,20,38]);
     }
-        translate([0-margin-4,0-margin-4,4])cube([38,60,38]);
+    translate([0-margin-10,0-margin-10,4])cube([38,60,38]);
     
         // screw holes
     translate([ 10, 10,0])  cylinder(h=screw_hole_h, d=screw_hole_d, center=true);
@@ -56,5 +65,11 @@ difference(){
     
         //round edge
     translate([38-5,60-5,0])difference(){translate([round_edge_r/2,round_edge_r/2,0])cube([round_edge_r,round_edge_r,100],center=true); cylinder(h=110,r=round_edge_r, center=true);}
+    
+    
+    
+    translate([ 10,55,bottom_thickness-margin-6.5]) M3InsertHole();
+    translate([ 30,55,bottom_thickness-margin-6.5]) M3InsertHole();
+    translate([ 37,10,bottom_thickness-margin-6.5]) M3InsertHole();
    
 }

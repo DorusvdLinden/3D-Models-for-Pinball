@@ -57,6 +57,7 @@ difference(){
     
     translate([ 6,10,-0.01]) M3InsertHole();
     translate([ 10,40,-0.01]) M3InsertHole();
-
+    translate([ 6,10,bottom_thickness-margin-6.5]) M3InsertHole();
+    translate([ 10,40,bottom_thickness-margin-6.5]) M3InsertHole();
    
 }
